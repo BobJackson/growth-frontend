@@ -73,55 +73,65 @@ const BookForm: React.FC = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <div>
-                <label>Title:</label>
-                <input type="text" name="title" value={formData.title} onChange={handleChange} required/>
+        <form onSubmit={handleSubmit} className="container mt-5">
+            <h2 className="mb-4">Add a New Book</h2>
+            <div className="mb-3">
+                <label htmlFor="title" className="form-label">Title:</label>
+                <input type="text" className="form-control" id="title" name="title" value={formData.title}
+                       onChange={handleChange} required/>
             </div>
-            <div>
-                <label>Sub Title:</label>
-                <input type="text" name="subTitle" value={formData.subTitle} onChange={handleChange}/>
+            <div className="mb-3">
+                <label htmlFor="subTitle" className="form-label">Sub Title:</label>
+                <input type="text" className="form-control" id="subTitle" name="subTitle" value={formData.subTitle}
+                       onChange={handleChange}/>
             </div>
-            <div>
-                <label>Published At:</label>
-                <input type="date" name="publishedAt" value={formData.publishedAt} onChange={handleChange}/>
+            <div className="mb-3">
+                <label htmlFor="publishedAt" className="form-label">Published At:</label>
+                <input type="date" className="form-control" id="publishedAt" name="publishedAt"
+                       value={formData.publishedAt} onChange={handleChange}/>
             </div>
-            <div>
-                <label>Cover URL:</label>
-                <input type="text" name="cover" value={formData.cover} onChange={handleChange} required/>
+            <div className="mb-3">
+                <label htmlFor="cover" className="form-label">Cover URL:</label>
+                <input type="text" className="form-control" id="cover" name="cover" value={formData.cover}
+                       onChange={handleChange} required/>
             </div>
-            <div>
-                <label>Description:</label>
-                <textarea name="description" value={formData.description} onChange={handleChange} required/>
+            <div className="mb-3">
+                <label htmlFor="description" className="form-label">Description:</label>
+                <textarea className="form-control" id="description" name="description" value={formData.description}
+                          onChange={handleChange} required rows={3}/>
             </div>
-            <div>
-                <label>Authors (comma separated):</label>
-                <input type="text" name="authors" value={formData.authors.join(', ')} onChange={(e) => setFormData({
+            <div className="mb-3">
+                <label htmlFor="authors" className="form-label">Authors (comma separated):</label>
+                <input type="text" className="form-control" id="authors" name="authors"
+                       value={formData.authors.join(', ')} onChange={(e) => setFormData({
                     ...formData,
                     authors: e.target.value.split(',').map(author => author.trim())
                 })} required/>
             </div>
-            <div>
-                <label>Category:</label>
-                <input type="text" name="category" value={formData.category} onChange={handleChange} required/>
+            <div className="mb-3">
+                <label htmlFor="category" className="form-label">Category:</label>
+                <input type="text" className="form-control" id="category" name="category" value={formData.category}
+                       onChange={handleChange} required/>
             </div>
-            <div>
-                <label>Tags (comma separated):</label>
-                <input type="text" name="tags" value={formData.tags.join(', ')} onChange={(e) => setFormData({
-                    ...formData,
-                    tags: e.target.value.split(',').map(tag => tag.trim())
-                })}/>
+            <div className="mb-3">
+                <label htmlFor="tags" className="form-label">Tags (comma separated):</label>
+                <input type="text" className="form-control" id="tags" name="tags" value={formData.tags.join(', ')}
+                       onChange={(e) => setFormData({
+                           ...formData,
+                           tags: e.target.value.split(',').map(tag => tag.trim())
+                       })}/>
             </div>
-            <div>
-                <label>Press:</label>
-                <input type="text" name="press" value={formData.press} onChange={handleChange} required/>
+            <div className="mb-3">
+                <label htmlFor="press" className="form-label">Press:</label>
+                <input type="text" className="form-control" id="press" name="press" value={formData.press}
+                       onChange={handleChange} required/>
             </div>
-            <div>
-                <label>Hidden:</label>
-                <input type="checkbox" name="hidden" checked={formData.hidden}
+            <div className="mb-3 form-check">
+                <input type="checkbox" className="form-check-input" id="hidden" name="hidden" checked={formData.hidden}
                        onChange={(e) => setFormData({...formData, hidden: e.target.checked})}/>
+                <label className="form-check-label" htmlFor="hidden">Hidden</label>
             </div>
-            <button type="submit">Add Book</button>
+            <button type="submit" className="btn btn-primary">Add Book</button>
         </form>
     );
 };
