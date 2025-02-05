@@ -1,5 +1,8 @@
 // BookForm.tsx
 import React, {useState} from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import {format} from 'date-fns';
 
 interface BookRequest {
     id: string;
@@ -20,7 +23,7 @@ const BookForm: React.FC = () => {
         id: '',
         title: '',
         subTitle: '',
-        publishedAt: '',
+        publishedAt: format(new Date(), 'yyyy-MM'), // 设置默认值为 yyyy-mm
         cover: '',
         description: '',
         authors: [],
@@ -32,10 +35,29 @@ const BookForm: React.FC = () => {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const {name, value} = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
+        if (name === 'publishedAt') {
+            // 确保 publishedAt 符合 yyyy-mm 格式
+            const formattedValue = value.slice(0, 7);
+            setFormData({
+                ...formData,
+                [name]: formattedValue,
+            });
+        } else {
+            setFormData({
+                ...formData,
+                [name]: value,
+            });
+        }
+    };
+
+    const handleDateChange = (date: Date | null) => {
+        if (date) {
+            const formattedDate = format(date, 'yyyy-MM');
+            setFormData({
+                ...formData,
+                publishedAt: formattedDate,
+            });
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -54,7 +76,7 @@ const BookForm: React.FC = () => {
                     id: '',
                     title: '',
                     subTitle: '',
-                    publishedAt: '',
+                    publishedAt: format(new Date(), 'yyyy-MM'), // 重置默认值
                     cover: '',
                     description: '',
                     authors: [],
@@ -87,8 +109,16 @@ const BookForm: React.FC = () => {
             </div>
             <div className="mb-3">
                 <label htmlFor="publishedAt" className="form-label">Published At:</label>
-                <input type="date" className="form-control" id="publishedAt" name="publishedAt"
-                       value={formData.publishedAt} onChange={handleChange}/>
+                <DatePicker
+                    selected={formData.publishedAt ? new Date(formData.publishedAt) : null}
+                    showIcon
+                    onChange={handleDateChange}
+                    showMonthYearPicker
+                    dateFormat="yyyy/MM"
+                    className="form-control"
+                    id="publishedAt"
+                    name="publishedAt"
+                />
             </div>
             <div className="mb-3">
                 <label htmlFor="cover" className="form-label">Cover URL:</label>
