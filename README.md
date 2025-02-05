@@ -48,3 +48,7 @@ export default tseslint.config({
   },
 })
 ```
+
+### node version
+
+v22.13.1
