@@ -35,19 +35,10 @@ const BookForm: React.FC = () => {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const {name, value} = e.target;
-        if (name === 'publishedAt') {
-            // 确保 publishedAt 符合 yyyy-mm 格式
-            const formattedValue = value.slice(0, 7);
-            setFormData({
-                ...formData,
-                [name]: formattedValue,
-            });
-        } else {
-            setFormData({
-                ...formData,
-                [name]: value,
-            });
-        }
+        setFormData({
+            ...formData,
+            [name]: value,
+        });
     };
 
     const handleDateChange = (date: Date | null) => {
