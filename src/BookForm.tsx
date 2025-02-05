@@ -1,5 +1,6 @@
 // BookForm.tsx
 import React, {useState} from 'react';
+import {API_BASE_URL} from './utils/api'; // 导入 API 常量
 
 interface BookRequest {
     id: string;
@@ -41,7 +42,7 @@ const BookForm: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const response = await fetch('/api/books', {
+            const response = await fetch(`${API_BASE_URL}/books`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
