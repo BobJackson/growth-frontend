@@ -170,6 +170,7 @@ const BookForm: React.FC = () => {
                 <label htmlFor="cover" className="form-label">Cover:</label>
                 <Upload
                     name="cover"
+                    className="ms-2"
                     beforeUpload={async (file) => {
                         try {
                             await client.put(file.name, file);
@@ -182,7 +183,7 @@ const BookForm: React.FC = () => {
                     }}
                     onChange={handleCoverUpload}
                 >
-                    <button className="btn btn-primary">
+                    <button className="btn btn-outline-primary">
                         Click to Upload
                     </button>
                 </Upload>
