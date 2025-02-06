@@ -3,7 +3,8 @@ import React, {useState} from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import {format} from 'date-fns';
-import {message, Upload} from 'antd';
+import {GetProp, Image, message, Upload, UploadFile, UploadProps} from 'antd';
+import {PlusOutlined} from '@ant-design/icons';
 import 'antd/dist/reset.css';
 import client from './utils/ossClient';
 import {UploadChangeParam} from "antd/es/upload";
@@ -36,6 +37,9 @@ const BookForm: React.FC = () => {
         press: '',
         hidden: false,
     });
+
+    const [previewOpen, setPreviewOpen] = useState(false);
+    const [previewImage, setPreviewImage] = useState('');
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const {name, value} = e.target;
@@ -107,6 +111,32 @@ const BookForm: React.FC = () => {
         }
     };
 
+    type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
+
+    const getBase64 = (file: FileType): Promise<string> =>
+        new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = (error) => reject(error);
+        });
+
+    const handleCoverPreview = async (file: UploadFile) => {
+        if (!file.url && !file.preview) {
+            file.preview = await getBase64(file.originFileObj as FileType);
+        }
+
+        setPreviewImage(file.url || (file.preview as string));
+        setPreviewOpen(true);
+    };
+
+    const uploadButton = (
+        <button style={{border: 0, background: 'none'}} type="button">
+            <PlusOutlined/>
+            <div style={{marginTop: 8}}>Upload</div>
+        </button>
+    );
+
     return (
         <form onSubmit={handleSubmit} className="container mt-5">
             <h2 className="mb-4">Add a New Book</h2>
@@ -171,6 +201,8 @@ const BookForm: React.FC = () => {
                 <Upload
                     name="cover"
                     className="ms-2"
+                    listType="picture-card"
+                    onPreview={handleCoverPreview}
                     beforeUpload={async (file) => {
                         try {
                             await client.put(file.name, file);
@@ -183,15 +215,24 @@ const BookForm: React.FC = () => {
                     }}
                     onChange={handleCoverUpload}
                 >
-                    <button className="btn btn-outline-primary">
-                        Click to Upload
-                    </button>
+                    {uploadButton}
                 </Upload>
-                {formData.cover && (
-                    <div className="mt-2">
-                        <img src={formData.cover} alt="Cover" style={{width: '100px', height: 'auto'}}/>
-                    </div>
-                )}
+                <div className="mt-2">
+                    {previewImage && (
+                        <Image
+                            wrapperStyle={{display: 'none'}}
+                            preview={{
+                                visible: previewOpen,
+                                onVisibleChange: (visible) => {
+                                    setPreviewOpen(visible);
+                                },
+                                afterOpenChange: (visible) => !visible && setPreviewImage(''),
+                            }}
+                            src={previewImage}
+                            alt="Preview"
+                        />
+                    )}
+                </div>
             </div>
             <div className="mb-3">
                 <label htmlFor="description" className="form-label">Description:</label>
