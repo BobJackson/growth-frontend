@@ -1,3 +1,3 @@
 ## 代办清单
 
-* 需要引入阿里云oss文件上传，支持页面上传图片
+* Please use STS Token for safety
