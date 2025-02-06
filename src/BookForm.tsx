@@ -214,6 +214,8 @@ const BookForm: React.FC = () => {
                         }
                     }}
                     onChange={handleCoverUpload}
+                    maxCount={1}
+                    accept="image/*"
                 >
                     {uploadButton}
                 </Upload>
