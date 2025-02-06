@@ -99,17 +99,50 @@ const BookForm: React.FC = () => {
                        onChange={handleChange}/>
             </div>
             <div className="mb-3">
-                <label htmlFor="publishedAt" className="form-label">Published At:</label>
-                <DatePicker
-                    selected={formData.publishedAt ? new Date(formData.publishedAt) : null}
-                    showIcon
-                    onChange={handleDateChange}
-                    showMonthYearPicker
-                    dateFormat="yyyy/MM"
-                    className="form-control"
-                    id="publishedAt"
-                    name="publishedAt"
-                />
+                <div className="row">
+                    <div className="col-4">
+                        <div>
+                            <label htmlFor="authors" className="form-label">Authors (comma separated):</label>
+                            <input type="text" className="form-control" id="authors" name="authors"
+                                   value={formData.authors.join(', ')} onChange={(e) => setFormData({
+                                ...formData,
+                                authors: e.target.value.split(',').map(author => author.trim())
+                            })} required/>
+                        </div>
+                    </div>
+                    <div className="col-4">
+                        <div className="row">
+                            <div className="col-6">
+                                <label htmlFor="publishedAt" className="form-label">Published At:</label>
+                                <div>
+                                    <DatePicker
+                                        selected={formData.publishedAt ? new Date(formData.publishedAt) : null}
+                                        showIcon
+                                        onChange={handleDateChange}
+                                        showMonthYearPicker
+                                        dateFormat="yyyy/MM"
+                                        className="form-control"
+                                        id="publishedAt"
+                                        name="publishedAt"
+                                    />
+                                </div>
+                            </div>
+                            <div className="col-6">
+                                <label htmlFor="category" className="form-label">Category:</label>
+                                <input type="text" className="form-control" id="category" name="category"
+                                       value={formData.category}
+                                       onChange={handleChange} required/>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-4">
+                        <div>
+                            <label htmlFor="press" className="form-label">Press:</label>
+                            <input type="text" className="form-control" id="press" name="press" value={formData.press}
+                                   onChange={handleChange} required/>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div className="mb-3">
                 <label htmlFor="cover" className="form-label">Cover URL:</label>
@@ -119,20 +152,7 @@ const BookForm: React.FC = () => {
             <div className="mb-3">
                 <label htmlFor="description" className="form-label">Description:</label>
                 <textarea className="form-control" id="description" name="description" value={formData.description}
-                          onChange={handleChange} required rows={3}/>
-            </div>
-            <div className="mb-3">
-                <label htmlFor="authors" className="form-label">Authors (comma separated):</label>
-                <input type="text" className="form-control" id="authors" name="authors"
-                       value={formData.authors.join(', ')} onChange={(e) => setFormData({
-                    ...formData,
-                    authors: e.target.value.split(',').map(author => author.trim())
-                })} required/>
-            </div>
-            <div className="mb-3">
-                <label htmlFor="category" className="form-label">Category:</label>
-                <input type="text" className="form-control" id="category" name="category" value={formData.category}
-                       onChange={handleChange} required/>
+                          onChange={handleChange} required rows={10}/>
             </div>
             <div className="mb-3">
                 <label htmlFor="tags" className="form-label">Tags (comma separated):</label>
@@ -141,11 +161,6 @@ const BookForm: React.FC = () => {
                            ...formData,
                            tags: e.target.value.split(',').map(tag => tag.trim())
                        })}/>
-            </div>
-            <div className="mb-3">
-                <label htmlFor="press" className="form-label">Press:</label>
-                <input type="text" className="form-control" id="press" name="press" value={formData.press}
-                       onChange={handleChange} required/>
             </div>
             <div className="mb-3 form-check">
                 <input type="checkbox" className="form-check-input" id="hidden" name="hidden" checked={formData.hidden}
