@@ -3,6 +3,10 @@ import React, {useState} from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import {format} from 'date-fns';
+import {message, Upload} from 'antd';
+import 'antd/dist/reset.css';
+import client from './utils/ossClient';
+import {UploadChangeParam} from "antd/es/upload";
 
 interface BookRequest {
     id: string;
@@ -85,6 +89,24 @@ const BookForm: React.FC = () => {
         }
     };
 
+    const handleCoverUpload = async (info: UploadChangeParam) => {
+        if (info.file.status === 'uploading') {
+            message.loading('Uploading file...', 0);
+            return;
+        }
+        if (info.file.status === 'done') {
+            // 获取上传后的文件 URL
+            const fileUrl = `https://growth-public.oss-cn-shanghai.aliyuncs.com.aliyuncs.com/books/it/${info.file.name}`;
+            setFormData({
+                ...formData,
+                cover: fileUrl,
+            });
+            message.success(`${info.file.name} file uploaded successfully`);
+        } else if (info.file.status === 'error') {
+            message.error(`${info.file.name} file upload failed.`);
+        }
+    };
+
     return (
         <form onSubmit={handleSubmit} className="container mt-5">
             <h2 className="mb-4">Add a New Book</h2>
@@ -145,9 +167,30 @@ const BookForm: React.FC = () => {
                 </div>
             </div>
             <div className="mb-3">
-                <label htmlFor="cover" className="form-label">Cover URL:</label>
-                <input type="text" className="form-control" id="cover" name="cover" value={formData.cover}
-                       onChange={handleChange} required/>
+                <label htmlFor="cover" className="form-label">Cover:</label>
+                <Upload
+                    name="cover"
+                    beforeUpload={async (file) => {
+                        try {
+                            await client.put(file.name, file);
+                            return false; // 阻止默认上传行为
+                        } catch (error) {
+                            console.error('Error uploading file:', error);
+                            message.error('File upload failed.');
+                            return false;
+                        }
+                    }}
+                    onChange={handleCoverUpload}
+                >
+                    <button className="btn btn-primary">
+                        Click to Upload
+                    </button>
+                </Upload>
+                {formData.cover && (
+                    <div className="mt-2">
+                        <img src={formData.cover} alt="Cover" style={{width: '100px', height: 'auto'}}/>
+                    </div>
+                )}
             </div>
             <div className="mb-3">
                 <label htmlFor="description" className="form-label">Description:</label>
