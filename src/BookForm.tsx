@@ -200,6 +200,7 @@ const BookForm: React.FC = () => {
                 <label htmlFor="cover" className="form-label">Cover:</label>
                 <Upload
                     name="cover"
+                    id="cover"
                     className="ms-2"
                     listType="picture-card"
                     onPreview={handleCoverPreview}
