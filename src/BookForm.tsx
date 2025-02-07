@@ -1,13 +1,13 @@
-// BookForm.tsx
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import {format} from 'date-fns';
 import {GetProp, Image, message, Upload, UploadFile, UploadProps} from 'antd';
 import {PlusOutlined} from '@ant-design/icons';
 import 'antd/dist/reset.css';
-import client from './utils/ossClient';
-import {UploadChangeParam} from "antd/es/upload";
+import ossClient from './utils/ossClient';
+import {UploadChangeParam} from 'antd/es/upload';
+import OSS from "ali-oss";
 
 interface BookRequest {
     id: string;
@@ -40,6 +40,21 @@ const BookForm: React.FC = () => {
 
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
+    const [client, setClient] = useState<OSS | null>(null);
+
+    useEffect(() => {
+        const initOSSClient = async () => {
+            try {
+                const oss = await ossClient();
+                setClient(oss);
+            } catch (error) {
+                console.error('Error initializing OSS client:', error);
+                message.error('Failed to initialize OSS client.');
+            }
+        };
+
+        initOSSClient().then(() => console.log('OSS client initialized.'));
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const {name, value} = e.target;
@@ -94,13 +109,18 @@ const BookForm: React.FC = () => {
     };
 
     const handleCoverUpload = async (info: UploadChangeParam) => {
+        if (!client) {
+            message.error('OSS client not initialized.');
+            return;
+        }
+
         if (info.file.status === 'uploading') {
             message.loading('Uploading file...', 0);
             return;
         }
         if (info.file.status === 'done') {
             // 获取上传后的文件 URL
-            const fileUrl = `https://growth-public.oss-cn-shanghai.aliyuncs.com.aliyuncs.com/books/it/${info.file.name}`;
+            const fileUrl = `https://growth-public.oss-cn-shanghai.aliyuncs.com/books/it/${info.file.name}`;
             setFormData({
                 ...formData,
                 cover: fileUrl,
@@ -205,8 +225,12 @@ const BookForm: React.FC = () => {
                     listType="picture-card"
                     onPreview={handleCoverPreview}
                     beforeUpload={async (file) => {
+                        if (!client) {
+                            message.error('OSS client not initialized.');
+                            return false;
+                        }
                         try {
-                            await client.put(file.name, file);
+                            await client.put('/books/it/' + `${file.name}`, file);
                             return false; // 阻止默认上传行为
                         } catch (error) {
                             console.error('Error uploading file:', error);
@@ -215,8 +239,8 @@ const BookForm: React.FC = () => {
                         }
                     }}
                     onChange={handleCoverUpload}
-                    maxCount={1}
-                    accept="image/*"
+                    maxCount={1} // 限制上传文件数量为1
+                    accept="image/*" // 限制上传图片文件
                 >
                     {uploadButton}
                 </Upload>
