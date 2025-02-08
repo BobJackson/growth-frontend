@@ -1,4 +1,3 @@
-// BookList.tsx
 import React, {useCallback, useEffect, useState} from 'react';
 import {Table, TablePaginationConfig} from 'antd';
 
@@ -18,7 +17,7 @@ interface Book {
 
 const BookList: React.FC = () => {
     const [books, setBooks] = useState<Book[]>([]);
-    const [pagination, setPagination] = useState({current: 0, pageSize: 10, total: 0});
+    const [pagination, setPagination] = useState({current: 1, pageSize: 10, total: 0});
 
     const fetchBooks = useCallback(async (page: number, size: number) => {
         try {
@@ -26,19 +25,13 @@ const BookList: React.FC = () => {
             if (response.ok) {
                 const data = await response.json().then(t => t.data);
                 setBooks(data.content);
-                setPagination({
-                    ...pagination,
-                    current: data.pageable.pageNumber + 1,
-                    pageSize: data.pageable.pageSize,
-                    total: data.totalElements,
-                });
             } else {
                 console.error('Failed to fetch books');
             }
         } catch (error) {
             console.error('Error fetching books:', error);
         }
-    }, [setBooks, setPagination, pagination]);
+    }, []);
 
     useEffect(() => {
         fetchBooks(pagination.current, pagination.pageSize).then();
