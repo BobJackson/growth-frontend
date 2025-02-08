@@ -8,6 +8,7 @@ import 'antd/dist/reset.css';
 import ossClient from './utils/ossClient';
 import {UploadChangeParam} from 'antd/es/upload';
 import OSS from "ali-oss";
+import {Link} from "react-router-dom";
 
 interface BookRequest {
     id: string;
@@ -158,129 +159,136 @@ const BookForm: React.FC = () => {
     );
 
     return (
-        <form onSubmit={handleSubmit} className="container mt-5">
-            <h2 className="mb-4">Add a New Book</h2>
-            <div className="mb-3">
-                <label htmlFor="title" className="form-label">Title:</label>
-                <input type="text" className="form-control" id="title" name="title" value={formData.title}
-                       onChange={handleChange} required/>
-            </div>
-            <div className="mb-3">
-                <label htmlFor="subTitle" className="form-label">Sub Title:</label>
-                <input type="text" className="form-control" id="subTitle" name="subTitle" value={formData.subTitle}
-                       onChange={handleChange}/>
-            </div>
-            <div className="mb-3">
-                <div className="row">
-                    <div className="col-4">
-                        <div>
-                            <label htmlFor="authors" className="form-label">Authors (comma separated):</label>
-                            <input type="text" className="form-control" id="authors" name="authors"
-                                   value={formData.authors.join(', ')} onChange={(e) => setFormData({
-                                ...formData,
-                                authors: e.target.value.split(',').map(author => author.trim())
-                            })} required/>
+        <div>
+            <nav className="mb-4">
+                <Link to="/books" className="btn btn-secondary me-2">Book List</Link>
+            </nav>
+            <form onSubmit={handleSubmit} className="container mt-5">
+                <h2 className="mb-4">Add a New Book</h2>
+                <div className="mb-3">
+                    <label htmlFor="title" className="form-label">Title:</label>
+                    <input type="text" className="form-control" id="title" name="title" value={formData.title}
+                           onChange={handleChange} required/>
+                </div>
+                <div className="mb-3">
+                    <label htmlFor="subTitle" className="form-label">Sub Title:</label>
+                    <input type="text" className="form-control" id="subTitle" name="subTitle" value={formData.subTitle}
+                           onChange={handleChange}/>
+                </div>
+                <div className="mb-3">
+                    <div className="row">
+                        <div className="col-4">
+                            <div>
+                                <label htmlFor="authors" className="form-label">Authors (comma separated):</label>
+                                <input type="text" className="form-control" id="authors" name="authors"
+                                       value={formData.authors.join(', ')} onChange={(e) => setFormData({
+                                    ...formData,
+                                    authors: e.target.value.split(',').map(author => author.trim())
+                                })} required/>
+                            </div>
                         </div>
-                    </div>
-                    <div className="col-4">
-                        <div className="row">
-                            <div className="col-6">
-                                <label htmlFor="publishedAt" className="form-label">Published At:</label>
-                                <div>
-                                    <DatePicker
-                                        selected={formData.publishedAt ? new Date(formData.publishedAt) : null}
-                                        showIcon
-                                        onChange={handleDateChange}
-                                        showMonthYearPicker
-                                        dateFormat="yyyy/MM"
-                                        className="form-control"
-                                        id="publishedAt"
-                                        name="publishedAt"
-                                    />
+                        <div className="col-4">
+                            <div className="row">
+                                <div className="col-6">
+                                    <label htmlFor="publishedAt" className="form-label">Published At:</label>
+                                    <div>
+                                        <DatePicker
+                                            selected={formData.publishedAt ? new Date(formData.publishedAt) : null}
+                                            showIcon
+                                            onChange={handleDateChange}
+                                            showMonthYearPicker
+                                            dateFormat="yyyy/MM"
+                                            className="form-control"
+                                            id="publishedAt"
+                                            name="publishedAt"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="col-6">
+                                    <label htmlFor="category" className="form-label">Category:</label>
+                                    <input type="text" className="form-control" id="category" name="category"
+                                           value={formData.category}
+                                           onChange={handleChange} required/>
                                 </div>
                             </div>
-                            <div className="col-6">
-                                <label htmlFor="category" className="form-label">Category:</label>
-                                <input type="text" className="form-control" id="category" name="category"
-                                       value={formData.category}
+                        </div>
+                        <div className="col-4">
+                            <div>
+                                <label htmlFor="press" className="form-label">Press:</label>
+                                <input type="text" className="form-control" id="press" name="press"
+                                       value={formData.press}
                                        onChange={handleChange} required/>
                             </div>
                         </div>
                     </div>
-                    <div className="col-4">
-                        <div>
-                            <label htmlFor="press" className="form-label">Press:</label>
-                            <input type="text" className="form-control" id="press" name="press" value={formData.press}
-                                   onChange={handleChange} required/>
-                        </div>
+                </div>
+                <div className="mb-3">
+                    <label htmlFor="cover" className="form-label">Cover:</label>
+                    <Upload
+                        name="cover"
+                        id="cover"
+                        className="ms-2"
+                        listType="picture-card"
+                        onPreview={handleCoverPreview}
+                        beforeUpload={async (file) => {
+                            if (!client) {
+                                message.error('OSS client not initialized.');
+                                return false;
+                            }
+                            try {
+                                await client.put('/books/it/' + `${file.name}`, file);
+                                return false; // 阻止默认上传行为
+                            } catch (error) {
+                                console.error('Error uploading file:', error);
+                                message.error('File upload failed.');
+                                return false;
+                            }
+                        }}
+                        onChange={handleCoverUpload}
+                        maxCount={1} // 限制上传文件数量为1
+                        accept="image/*" // 限制上传图片文件
+                    >
+                        {uploadButton}
+                    </Upload>
+                    <div className="mt-2">
+                        {previewImage && (
+                            <Image
+                                wrapperStyle={{display: 'none'}}
+                                preview={{
+                                    visible: previewOpen,
+                                    onVisibleChange: (visible) => {
+                                        setPreviewOpen(visible);
+                                    },
+                                    afterOpenChange: (visible) => !visible && setPreviewImage(''),
+                                }}
+                                src={previewImage}
+                                alt="Preview"
+                            />
+                        )}
                     </div>
                 </div>
-            </div>
-            <div className="mb-3">
-                <label htmlFor="cover" className="form-label">Cover:</label>
-                <Upload
-                    name="cover"
-                    id="cover"
-                    className="ms-2"
-                    listType="picture-card"
-                    onPreview={handleCoverPreview}
-                    beforeUpload={async (file) => {
-                        if (!client) {
-                            message.error('OSS client not initialized.');
-                            return false;
-                        }
-                        try {
-                            await client.put('/books/it/' + `${file.name}`, file);
-                            return false; // 阻止默认上传行为
-                        } catch (error) {
-                            console.error('Error uploading file:', error);
-                            message.error('File upload failed.');
-                            return false;
-                        }
-                    }}
-                    onChange={handleCoverUpload}
-                    maxCount={1} // 限制上传文件数量为1
-                    accept="image/*" // 限制上传图片文件
-                >
-                    {uploadButton}
-                </Upload>
-                <div className="mt-2">
-                    {previewImage && (
-                        <Image
-                            wrapperStyle={{display: 'none'}}
-                            preview={{
-                                visible: previewOpen,
-                                onVisibleChange: (visible) => {
-                                    setPreviewOpen(visible);
-                                },
-                                afterOpenChange: (visible) => !visible && setPreviewImage(''),
-                            }}
-                            src={previewImage}
-                            alt="Preview"
-                        />
-                    )}
+                <div className="mb-3">
+                    <label htmlFor="description" className="form-label">Description:</label>
+                    <textarea className="form-control" id="description" name="description" value={formData.description}
+                              onChange={handleChange} required rows={10}/>
                 </div>
-            </div>
-            <div className="mb-3">
-                <label htmlFor="description" className="form-label">Description:</label>
-                <textarea className="form-control" id="description" name="description" value={formData.description}
-                          onChange={handleChange} required rows={10}/>
-            </div>
-            <div className="mb-3">
-                <label htmlFor="tags" className="form-label">Tags (comma separated):</label>
-                <input type="text" className="form-control" id="tags" name="tags" value={formData.tags.join(', ')}
-                       onChange={(e) => setFormData({
-                           ...formData,
-                           tags: e.target.value.split(',').map(tag => tag.trim())
-                       })}/>
-            </div>
-            <div className="mb-3 form-check">
-                <input type="checkbox" className="form-check-input" id="hidden" name="hidden" checked={formData.hidden}
-                       onChange={(e) => setFormData({...formData, hidden: e.target.checked})}/>
-                <label className="form-check-label" htmlFor="hidden">Hidden</label>
-            </div>
-            <button type="submit" className="btn btn-primary">Add Book</button>
-        </form>
+                <div className="mb-3">
+                    <label htmlFor="tags" className="form-label">Tags (comma separated):</label>
+                    <input type="text" className="form-control" id="tags" name="tags" value={formData.tags.join(', ')}
+                           onChange={(e) => setFormData({
+                               ...formData,
+                               tags: e.target.value.split(',').map(tag => tag.trim())
+                           })}/>
+                </div>
+                <div className="mb-3 form-check">
+                    <input type="checkbox" className="form-check-input" id="hidden" name="hidden"
+                           checked={formData.hidden}
+                           onChange={(e) => setFormData({...formData, hidden: e.target.checked})}/>
+                    <label className="form-check-label" htmlFor="hidden">Hidden</label>
+                </div>
+                <button type="submit" className="btn btn-primary">Add Book</button>
+            </form>
+        </div>
     );
 };
 
