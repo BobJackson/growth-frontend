@@ -1,5 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {Table, TablePaginationConfig} from 'antd';
+import {Button, message, Popconfirm, Table, TablePaginationConfig} from 'antd';
+import {Link} from "react-router-dom";
+import {DeleteOutlined, EditOutlined} from "@ant-design/icons";
 
 interface Book {
     id: string;
@@ -45,6 +47,24 @@ const BookList: React.FC = () => {
         });
     };
 
+    const handleDelete = useCallback(async (id: string) => {
+        try {
+            const response = await fetch(`/api/books/${id}`, {
+                method: 'DELETE',
+            });
+            if (response.ok) {
+                message.success('Book deleted successfully');
+                fetchBooks(pagination.current, pagination.pageSize).then();
+            } else {
+                console.error('Failed to delete book');
+                message.error('Failed to delete book');
+            }
+        } catch (error) {
+            console.error('Error deleting book:', error);
+            message.error('An error occurred while deleting the book');
+        }
+    }, [fetchBooks, pagination]);
+
     const columns = [
         {title: 'Title', dataIndex: 'title', key: 'title'},
         {title: 'Sub Title', dataIndex: 'subTitle', key: 'subTitle'},
@@ -54,6 +74,27 @@ const BookList: React.FC = () => {
         {title: 'Press', dataIndex: 'press', key: 'press'},
         {title: 'Tags', dataIndex: 'tags', key: 'tags', render: (tags: string[]) => tags.join(', ')},
         {title: 'Hidden', dataIndex: 'hidden', key: 'hidden', render: (hidden: boolean) => hidden ? 'Yes' : 'No'},
+        {
+            title: 'Action',
+            key: 'action',
+            render: (record: Book) => (
+                <div className="row">
+                    <div className="col-6">
+                        <Link to={`/books/edit/${record.id}`} style={{marginRight: 8}}>
+                            <Button type="primary" icon={<EditOutlined/>}/>
+                        </Link>
+                    </div>
+                    <div className="col-6">
+                        <Popconfirm
+                            title="Sure to delete?"
+                            onConfirm={() => handleDelete(record.id)}
+                        >
+                            <Button type="primary" danger icon={<DeleteOutlined/>}/>
+                        </Popconfirm>
+                    </div>
+                </div>
+            ),
+        },
     ];
 
     return (
