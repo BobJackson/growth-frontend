@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {Button, message, Popconfirm, Table, TablePaginationConfig} from 'antd';
+import {Button, message, Popconfirm, Switch, Table, TablePaginationConfig} from 'antd';
 import {Link} from "react-router-dom";
 import {DeleteOutlined, EditOutlined} from "@ant-design/icons";
 
@@ -65,6 +65,27 @@ const BookList: React.FC = () => {
         }
     }, [fetchBooks, pagination]);
 
+    const handleToggleHidden = useCallback(async (checked: boolean, id: string) => {
+        try {
+            const response = await fetch(`/api/books/${id}/hidden?hidden=${checked}`, {
+                method: 'PATCH',
+            });
+            if (response.ok) {
+                message.success(`Book hidden status updated to ${checked ? 'hidden' : 'visible'}`);
+                // Update local state immediately
+                setBooks(prevBooks => prevBooks.map(book =>
+                    book.id === id ? {...book, hidden: checked} : book
+                ));
+            } else {
+                console.error('Failed to update book hidden status');
+                message.error('Failed to update book hidden status');
+            }
+        } catch (error) {
+            console.error('Error updating book hidden status:', error);
+            message.error('An error occurred while updating the book hidden status');
+        }
+    }, []);
+
     const columns = [
         {title: 'Title', dataIndex: 'title', key: 'title'},
         {title: 'Sub Title', dataIndex: 'subTitle', key: 'subTitle'},
@@ -73,7 +94,17 @@ const BookList: React.FC = () => {
         {title: 'Category', dataIndex: 'category', key: 'category'},
         {title: 'Press', dataIndex: 'press', key: 'press'},
         {title: 'Tags', dataIndex: 'tags', key: 'tags', render: (tags: string[]) => tags.join(', ')},
-        {title: 'Hidden', dataIndex: 'hidden', key: 'hidden', render: (hidden: boolean) => hidden ? 'Yes' : 'No'},
+        {
+            title: 'Hidden',
+            dataIndex: 'hidden',
+            key: 'hidden',
+            render: (hidden: boolean, record: Book) => (
+                <Switch
+                    checked={hidden}
+                    onChange={(checked) => handleToggleHidden(checked, record.id)}
+                />
+            ),
+        },
         {
             title: 'Action',
             key: 'action',
