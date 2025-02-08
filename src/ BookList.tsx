@@ -52,6 +52,7 @@ const BookList: React.FC = () => {
         {title: 'Published At', dataIndex: 'publishedAt', key: 'publishedAt'},
         {title: 'Category', dataIndex: 'category', key: 'category'},
         {title: 'Press', dataIndex: 'press', key: 'press'},
+        {title: 'Tags', dataIndex: 'tags', key: 'tags', render: (tags: string[]) => tags.join(', ')},
         {title: 'Hidden', dataIndex: 'hidden', key: 'hidden', render: (hidden: boolean) => hidden ? 'Yes' : 'No'},
     ];
 
