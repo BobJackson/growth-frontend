@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {Button, message, Popconfirm, Switch, Table, TablePaginationConfig} from 'antd';
+import {Button, Image, message, Popconfirm, Switch, Table, TablePaginationConfig} from 'antd';
 import {Link} from "react-router-dom";
 import {DeleteOutlined, EditOutlined} from "@ant-design/icons";
 
@@ -89,6 +89,19 @@ const BookList: React.FC = () => {
     const columns = [
         {title: 'Title', dataIndex: 'title', key: 'title'},
         {title: 'Sub Title', dataIndex: 'subTitle', key: 'subTitle'},
+        {
+            title: 'Cover',
+            dataIndex: 'cover',
+            key: 'cover',
+            render: (cover: string) => (
+                <Image
+                    src={cover}
+                    alt="Book Cover"
+                    style={{width: '50px', height: '50px', objectFit: 'cover'}}
+                    preview={true}
+                />
+            ),
+        },
         {title: 'Authors', dataIndex: 'authors', key: 'authors', render: (authors: string[]) => authors.join(', ')},
         {title: 'Published At', dataIndex: 'publishedAt', key: 'publishedAt'},
         {title: 'Category', dataIndex: 'category', key: 'category'},
