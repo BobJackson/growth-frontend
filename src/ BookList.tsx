@@ -18,7 +18,7 @@ interface Book {
 
 const BookList: React.FC = () => {
     const [books, setBooks] = useState<Book[]>([]);
-    const [pagination, setPagination] = useState({current: 1, pageSize: 10, total: 0});
+    const [pagination, setPagination] = useState({current: 0, pageSize: 10, total: 0});
 
     const fetchBooks = useCallback(async (page: number, size: number) => {
         try {
@@ -28,7 +28,7 @@ const BookList: React.FC = () => {
                 setBooks(data.content);
                 setPagination({
                     ...pagination,
-                    current: data.pageable.pageNumber,
+                    current: data.pageable.pageNumber + 1,
                     pageSize: data.pageable.pageSize,
                     total: data.totalElements,
                 });
