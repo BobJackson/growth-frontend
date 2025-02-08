@@ -97,7 +97,7 @@ const BookList: React.FC = () => {
                 <Image
                     src={cover}
                     alt="Book Cover"
-                    style={{width: '50px', height: '50px', objectFit: 'cover'}}
+                    style={{width: '100px', height: 'auto', objectFit: 'contain', maxHeight: '100px'}}
                     preview={true}
                 />
             ),
