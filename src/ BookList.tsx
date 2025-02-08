@@ -1,7 +1,8 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {Button, Image, message, Popconfirm, Switch, Table, TablePaginationConfig} from 'antd';
-import {Link} from "react-router-dom";
+import {Button, Image, message, Modal, Popconfirm, Switch, Table, TablePaginationConfig} from 'antd';
 import {DeleteOutlined, EditOutlined} from "@ant-design/icons";
+import BookForm from './BookForm';
+import {format} from 'date-fns';
 
 interface Book {
     id: string;
@@ -20,6 +21,9 @@ interface Book {
 const BookList: React.FC = () => {
     const [books, setBooks] = useState<Book[]>([]);
     const [pagination, setPagination] = useState({current: 1, pageSize: 10, total: 0});
+    const [editingBook, setEditingBook] = useState<Book | null>(null);
+    const [isAddingBook, setIsAddingBook] = useState(false);
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
     const fetchBooks = useCallback(async (page: number, size: number) => {
         try {
@@ -86,6 +90,62 @@ const BookList: React.FC = () => {
         }
     }, []);
 
+    const handleEdit = async (values: Book) => {
+        try {
+            const response = await fetch(`/api/books/${values.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(values),
+            });
+            if (response.ok) {
+                message.success('Book updated successfully');
+                fetchBooks(pagination.current, pagination.pageSize).then();
+                setIsModalVisible(false); // 关闭模态框
+            } else {
+                console.error('Failed to update book');
+                message.error('Failed to update book');
+            }
+        } catch (error) {
+            console.error('Error updating book:', error);
+            message.error('An error occurred while updating the book');
+        }
+    };
+
+    const handleAdd = async (values: Book) => {
+        try {
+            const response = await fetch('/api/books', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(values),
+            });
+            if (response.ok) {
+                message.success('Book added successfully');
+                fetchBooks(pagination.current, pagination.pageSize).then();
+                setIsAddingBook(false); // 关闭添加表单
+            } else {
+                console.error('Failed to add book');
+                message.error('Failed to add book');
+            }
+        } catch (error) {
+            console.error('Error adding book:', error);
+            message.error('An error occurred while adding the book');
+        }
+    };
+
+    const showModal = (book: Book) => {
+        setEditingBook(book);
+        setIsModalVisible(true);
+    };
+
+    const handleCancel = () => {
+        setIsModalVisible(false);
+        setEditingBook(null);
+    };
+
     const columns = [
         {title: 'Title', dataIndex: 'title', key: 'title'},
         {title: 'Sub Title', dataIndex: 'subTitle', key: 'subTitle'},
@@ -124,9 +184,7 @@ const BookList: React.FC = () => {
             render: (record: Book) => (
                 <div className="row">
                     <div className="col-6">
-                        <Link to={`/books/edit/${record.id}`} style={{marginRight: 8}}>
-                            <Button type="primary" icon={<EditOutlined/>}/>
-                        </Link>
+                        <Button type="primary" icon={<EditOutlined/>} onClick={() => showModal(record)}/>
                     </div>
                     <div className="col-6">
                         <Popconfirm
@@ -144,6 +202,9 @@ const BookList: React.FC = () => {
     return (
         <div className="container mt-5">
             <h2 className="mb-4">Book List</h2>
+            <Button type="primary" onClick={() => setIsAddingBook(true)} style={{marginBottom: '16px'}}>
+                Add New Book
+            </Button>
             <Table
                 dataSource={books}
                 columns={columns}
@@ -151,6 +212,42 @@ const BookList: React.FC = () => {
                 pagination={pagination}
                 onChange={handleTableChange}
             />
+            {isAddingBook && (
+                <BookForm
+                    book={{
+                        id: '',
+                        title: '',
+                        subTitle: '',
+                        publishedAt: format(new Date(), 'yyyy-MM'),
+                        cover: '',
+                        description: '',
+                        authors: [],
+                        category: '',
+                        tags: [],
+                        press: '',
+                        hidden: false,
+                    }}
+                    mode="add"
+                    onFinish={handleAdd}
+                    onCancel={() => setIsAddingBook(false)}
+                />
+            )}
+            <Modal
+                title={editingBook ? 'Edit Book' : 'Add a New Book'}
+                open={isModalVisible}
+                onCancel={handleCancel}
+                footer={null}
+                width={800}
+            >
+                {editingBook && (
+                    <BookForm
+                        book={editingBook}
+                        mode="edit"
+                        onFinish={handleEdit}
+                        onCancel={handleCancel}
+                    />
+                )}
+            </Modal>
         </div>
     );
 };

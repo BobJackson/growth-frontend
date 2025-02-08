@@ -2,13 +2,12 @@ import React, {useEffect, useState} from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import {format} from 'date-fns';
-import {GetProp, Image, message, Upload, UploadFile, UploadProps} from 'antd';
+import {Button, GetProp, Image, message, Modal, Upload, UploadFile, UploadProps} from 'antd';
 import {PlusOutlined} from '@ant-design/icons';
 import 'antd/dist/reset.css';
 import ossClient from './utils/ossClient';
 import {UploadChangeParam} from 'antd/es/upload';
 import OSS from "ali-oss";
-import {Link} from "react-router-dom";
 
 interface BookRequest {
     id: string;
@@ -24,19 +23,26 @@ interface BookRequest {
     hidden: boolean;
 }
 
-const BookForm: React.FC = () => {
+interface BookFormProps {
+    book: BookRequest;
+    mode: 'add' | 'edit';
+    onFinish: (values: BookRequest) => void;
+    onCancel: () => void;
+}
+
+const BookForm: React.FC<BookFormProps> = ({book, mode, onFinish, onCancel}) => {
     const [formData, setFormData] = useState<BookRequest>({
-        id: '',
-        title: '',
-        subTitle: '',
-        publishedAt: format(new Date(), 'yyyy-MM'), // 设置默认值为 yyyy-mm
-        cover: '',
-        description: '',
-        authors: [],
-        category: '',
-        tags: [],
-        press: '',
-        hidden: false,
+        id: book.id,
+        title: book.title,
+        subTitle: book.subTitle,
+        publishedAt: book.publishedAt,
+        cover: book.cover,
+        description: book.description,
+        authors: book.authors,
+        category: book.category,
+        tags: book.tags,
+        press: book.press,
+        hidden: book.hidden,
     });
 
     const [previewOpen, setPreviewOpen] = useState(false);
@@ -78,34 +84,10 @@ const BookForm: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const response = await fetch('/api/books', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
-            if (response.ok) {
-                alert('Book added successfully!');
-                setFormData({
-                    id: '',
-                    title: '',
-                    subTitle: '',
-                    publishedAt: format(new Date(), 'yyyy-MM'), // 重置默认值
-                    cover: '',
-                    description: '',
-                    authors: [],
-                    category: '',
-                    tags: [],
-                    press: '',
-                    hidden: false,
-                });
-            } else {
-                alert('Failed to add book.');
-            }
+            onFinish(formData);
         } catch (error) {
-            console.error('Error adding book:', error);
-            alert('An error occurred while adding the book.');
+            console.error('Error updating book:', error);
+            message.error('An error occurred while updating the book.');
         }
     };
 
@@ -159,12 +141,14 @@ const BookForm: React.FC = () => {
     );
 
     return (
-        <div>
-            <nav className="mb-4">
-                <Link to="/books" className="btn btn-secondary me-2">Book List</Link>
-            </nav>
+        <Modal
+            title={mode === 'edit' ? 'Edit Book' : 'Add a New Book'}
+            open={true}
+            onCancel={onCancel}
+            footer={null}
+            width={800}
+        >
             <form onSubmit={handleSubmit} className="container mt-5">
-                <h2 className="mb-4">Add a New Book</h2>
                 <div className="mb-3">
                     <label htmlFor="title" className="form-label">Title:</label>
                     <input type="text" className="form-control" id="title" name="title" value={formData.title}
@@ -286,9 +270,12 @@ const BookForm: React.FC = () => {
                            onChange={(e) => setFormData({...formData, hidden: e.target.checked})}/>
                     <label className="form-check-label" htmlFor="hidden">Hidden</label>
                 </div>
-                <button type="submit" className="btn btn-primary">Add Book</button>
+                <div className="d-flex justify-content-between">
+                    <Button type="default" onClick={onCancel}>Cancel</Button>
+                    <Button type="primary" htmlType="submit">{mode === 'edit' ? 'Save Book' : 'Add Book'}</Button>
+                </div>
             </form>
-        </div>
+        </Modal>
     );
 };
 
