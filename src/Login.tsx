@@ -47,6 +47,9 @@ const Login: React.FC<{ onLoginSuccess: () => void }> = ({onLoginSuccess}) => {
     return (
         <>
             {contextHolder}
+            <div>
+                <h1>Login</h1>
+            </div>
             <Form
                 name="login"
                 initialValues={{remember: true}}
