@@ -1,0 +1,12 @@
+#root {
+    height: 100%;
+}
+
+.site-layout-background {
+    background: #fff;
+}
+
+.logo {
+    height: 32px;
+    margin: 16px;
+}
