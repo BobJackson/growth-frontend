@@ -5,13 +5,18 @@ import {BookOutlined, DashboardOutlined, LogoutOutlined, MoonOutlined, SunOutlin
 
 const {Sider} = Layout;
 
-const SideMenu: React.FC<{ toggleTheme: () => void; themeMode: 'light' | 'dark' }> = ({toggleTheme, themeMode}) => {
+const SideMenu: React.FC<{
+    toggleTheme: () => void;
+    themeMode: 'light' | 'dark';
+    onLogout: () => void
+}> = ({toggleTheme, themeMode, onLogout}) => {
     const navigate = useNavigate();
 
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('username');
+        onLogout(); // 调用父组件的 onLogout 方法
         navigate('/login', {replace: true});
     };
 

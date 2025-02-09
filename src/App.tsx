@@ -30,11 +30,16 @@ function App() {
         setIsLoggedIn(true);
     };
 
+    const handleLogoutSuccess = () => {
+        setIsLoggedIn(false);
+    };
+
     return (
         <ConfigProvider theme={{algorithm: currentTheme}}>
             <Router>
                 <Layout style={{minHeight: '100vh'}}>
-                    {isLoggedIn && <SideMenu toggleTheme={toggleTheme} themeMode={themeMode}/>}
+                    {isLoggedIn &&
+                        <SideMenu toggleTheme={toggleTheme} themeMode={themeMode} onLogout={handleLogoutSuccess}/>}
                     <Layout>
                         <Content style={{margin: '24px 16px 0', overflow: 'initial'}}>
                             <div style={{padding: 24, textAlign: 'center'}}>
