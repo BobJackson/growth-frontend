@@ -14,7 +14,7 @@ interface Book {
     authors: string[];
     category: string;
     tags: string[];
-    press: string;
+    publisher: string;
     hidden: boolean;
 }
 
@@ -165,7 +165,7 @@ const BookList: React.FC = () => {
         {title: 'Authors', dataIndex: 'authors', key: 'authors', render: (authors: string[]) => authors.join(', ')},
         {title: 'Published At', dataIndex: 'publishedAt', key: 'publishedAt', width: 120},
         {title: 'Category', dataIndex: 'category', key: 'category'},
-        {title: 'Press', dataIndex: 'press', key: 'press'},
+        {title: 'Publisher', dataIndex: 'publisher', key: 'publisher'},
         {title: 'Tags', dataIndex: 'tags', key: 'tags', render: (tags: string[]) => tags.join(', ')},
         {
             title: 'Hidden',
@@ -224,7 +224,7 @@ const BookList: React.FC = () => {
                         authors: [],
                         category: '',
                         tags: [],
-                        press: '',
+                        publisher: '',
                         hidden: false,
                     }}
                     mode="add"

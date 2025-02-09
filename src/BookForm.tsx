@@ -19,7 +19,7 @@ interface BookRequest {
     authors: string[];
     category: string;
     tags: string[];
-    press: string;
+    publisher: string;
     hidden: boolean;
 }
 
@@ -41,7 +41,7 @@ const BookForm: React.FC<BookFormProps> = ({book, mode, onFinish, onCancel}) => 
         authors: book.authors,
         category: book.category,
         tags: book.tags,
-        press: book.press,
+        publisher: book.publisher,
         hidden: book.hidden,
     });
 
@@ -230,9 +230,9 @@ const BookForm: React.FC<BookFormProps> = ({book, mode, onFinish, onCancel}) => 
                         </div>
                         <div className="col-4">
                             <div>
-                                <label htmlFor="press" className="form-label">Press:</label>
-                                <input type="text" className="form-control" id="press" name="press"
-                                       value={formData.press}
+                                <label htmlFor="publisher" className="form-label">Publisher:</label>
+                                <input type="text" className="form-control" id="publisher" name="publisher"
+                                       value={formData.publisher}
                                        onChange={handleChange} required/>
                             </div>
                         </div>
