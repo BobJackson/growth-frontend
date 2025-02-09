@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {Button, Image, message, Popconfirm, Switch, Table, TablePaginationConfig} from 'antd';
+import {Button, Flex, Image, message, Popconfirm, Switch, Table, TablePaginationConfig} from 'antd';
 import {DeleteOutlined, EditOutlined} from "@ant-design/icons";
 import BookForm from './BookForm';
 import {format} from 'date-fns';
@@ -179,19 +179,15 @@ const BookList: React.FC = () => {
             title: 'Action',
             key: 'action',
             render: (record: Book) => (
-                <div className="row">
-                    <div className="col-6">
-                        <Button type="primary" icon={<EditOutlined/>} onClick={() => showModal(record)}/>
-                    </div>
-                    <div className="col-6">
-                        <Popconfirm
-                            title="Sure to delete?"
-                            onConfirm={() => handleDelete(record.id)}
-                        >
-                            <Button type="primary" danger icon={<DeleteOutlined/>}/>
-                        </Popconfirm>
-                    </div>
-                </div>
+                <Flex gap="small">
+                    <Button type="primary" icon={<EditOutlined/>} onClick={() => showModal(record)}/>
+                    <Popconfirm
+                        title="Sure to delete?"
+                        onConfirm={() => handleDelete(record.id)}
+                    >
+                        <Button type="primary" danger icon={<DeleteOutlined/>}/>
+                    </Popconfirm>
+                </Flex>
             ),
         },
     ];
@@ -199,9 +195,12 @@ const BookList: React.FC = () => {
     return (
         <div className="container mt-5">
             <h2 className="mb-4">Book List</h2>
-            <Button type="primary" onClick={() => setIsAddingBook(true)} style={{marginBottom: '16px'}}>
-                Add New Book
-            </Button>
+            <Flex justify="flex-end" align="flex-end">
+                <Button type="primary" onClick={() => setIsAddingBook(true)} style={{marginBottom: '16px'}}>
+                    Add New Book
+                </Button>
+            </Flex>
+
             <Table
                 dataSource={books}
                 columns={columns}
