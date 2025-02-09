@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {Button, Image, message, Modal, Popconfirm, Switch, Table, TablePaginationConfig} from 'antd';
+import {Button, Image, message, Popconfirm, Switch, Table, TablePaginationConfig} from 'antd';
 import {DeleteOutlined, EditOutlined} from "@ant-design/icons";
 import BookForm from './BookForm';
 import {format} from 'date-fns';
@@ -23,7 +23,6 @@ const BookList: React.FC = () => {
     const [pagination, setPagination] = useState({current: 1, pageSize: 10, total: 0});
     const [editingBook, setEditingBook] = useState<Book | null>(null);
     const [isAddingBook, setIsAddingBook] = useState(false);
-    const [isModalVisible, setIsModalVisible] = useState(false);
 
     const fetchBooks = useCallback(async (page: number, size: number) => {
         try {
@@ -102,7 +101,6 @@ const BookList: React.FC = () => {
             if (response.ok) {
                 message.success('Book updated successfully');
                 fetchBooks(pagination.current, pagination.pageSize).then();
-                setIsModalVisible(false); // 关闭模态框
             } else {
                 console.error('Failed to update book');
                 message.error('Failed to update book');
@@ -138,11 +136,9 @@ const BookList: React.FC = () => {
 
     const showModal = (book: Book) => {
         setEditingBook(book);
-        setIsModalVisible(true);
     };
 
     const handleCancel = () => {
-        setIsModalVisible(false);
         setEditingBook(null);
     };
 
@@ -232,22 +228,14 @@ const BookList: React.FC = () => {
                     onCancel={() => setIsAddingBook(false)}
                 />
             )}
-            <Modal
-                title={editingBook ? 'Edit Book' : 'Add a New Book'}
-                open={isModalVisible}
-                onCancel={handleCancel}
-                footer={null}
-                width={800}
-            >
-                {editingBook && (
-                    <BookForm
-                        book={editingBook}
-                        mode="edit"
-                        onFinish={handleEdit}
-                        onCancel={handleCancel}
-                    />
-                )}
-            </Modal>
+            {editingBook && (
+                <BookForm
+                    book={editingBook}
+                    mode="edit"
+                    onFinish={handleEdit}
+                    onCancel={handleCancel}
+                />
+            )}
         </div>
     );
 };
