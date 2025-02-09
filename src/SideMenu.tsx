@@ -44,6 +44,7 @@ const SideMenu: React.FC<{ toggleTheme: () => void; themeMode: 'light' | 'dark' 
                 theme={themeMode}
                 mode="inline"
                 items={items}
+                defaultSelectedKeys={['1']}
             />
         </Sider>
     );
