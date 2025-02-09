@@ -101,6 +101,7 @@ const BookList: React.FC = () => {
             if (response.ok) {
                 message.success('Book updated successfully');
                 fetchBooks(pagination.current, pagination.pageSize).then();
+                setEditingBook(null);
             } else {
                 console.error('Failed to update book');
                 message.error('Failed to update book');
