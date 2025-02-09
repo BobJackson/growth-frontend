@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Layout, Menu} from 'antd';
+import {Button, Layout, Menu, Tooltip} from 'antd';
 import {Link, useNavigate} from 'react-router-dom';
 import {BookOutlined, DashboardOutlined, LogoutOutlined, MoonOutlined, SunOutlined} from '@ant-design/icons';
 
@@ -26,19 +26,16 @@ const SideMenu: React.FC<{ toggleTheme: () => void; themeMode: 'light' | 'dark' 
             icon: <BookOutlined/>,
             label: <Link to="/books">Books</Link>,
         },
-        {
-            key: '3',
-            icon: <LogoutOutlined/>,
-            label: <a onClick={handleLogout}>Logout</a>,
-        },
     ];
 
     return (
         <Sider collapsible theme={themeMode}>
             <div className="logo" onClick={toggleTheme}>
-                <Button type="link">
-                    {themeMode === 'light' ? <SunOutlined/> : <MoonOutlined/>} Toggle Theme
-                </Button>
+                <Tooltip title="Toggle Theme" placement='right'>
+                    <Button type="link">
+                        {themeMode === 'light' ? <SunOutlined/> : <MoonOutlined/>}
+                    </Button>
+                </Tooltip>
             </div>
             <Menu
                 theme={themeMode}
@@ -46,6 +43,12 @@ const SideMenu: React.FC<{ toggleTheme: () => void; themeMode: 'light' | 'dark' 
                 items={items}
                 defaultSelectedKeys={['1']}
             />
+            <div style={{position: 'absolute', bottom: 80, width: '100%', textAlign: 'center'}}>
+                <Tooltip title="Logout">
+                    <Button type="link" danger={true} onClick={handleLogout} icon={<LogoutOutlined/>}>
+                    </Button>
+                </Tooltip>
+            </div>
         </Sider>
     );
 };
