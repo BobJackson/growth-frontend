@@ -6,7 +6,7 @@ import {Button, GetProp, Image, message, Modal, Upload, UploadFile, UploadProps}
 import {PlusOutlined} from '@ant-design/icons';
 import 'antd/dist/reset.css';
 import ossClient from './utils/ossClient';
-import {UploadChangeParam} from 'antd/es/upload';
+import {RcFile, UploadChangeParam} from 'antd/es/upload';
 import OSS from "ali-oss";
 
 interface BookRequest {
@@ -48,6 +48,7 @@ const BookForm: React.FC<BookFormProps> = ({book, mode, onFinish, onCancel}) => 
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const [client, setClient] = useState<OSS | null>(null);
+    const [isCoverUploaded, setIsCoverUploaded] = useState(false); // 新增状态
 
     useEffect(() => {
         const initOSSClient = async () => {
@@ -91,26 +92,37 @@ const BookForm: React.FC<BookFormProps> = ({book, mode, onFinish, onCancel}) => 
         }
     };
 
+    const handleBeforeUpload = async (file: RcFile) => {
+        if (!client) {
+            message.error('OSS client not initialized.');
+            return false;
+        }
+        try {
+            await client.put('/books/it/' + `${file.name}`, file);
+            return false; // 阻止默认上传行为
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            message.error('File upload failed.');
+            return false;
+        }
+    }
+
     const handleCoverUpload = async (info: UploadChangeParam) => {
         if (!client) {
             message.error('OSS client not initialized.');
             return;
         }
-
-        if (info.file.status === 'uploading') {
-            message.loading('Uploading file...', 0);
-            return;
-        }
-        if (info.file.status === 'done') {
+        if (info.file) {
             // 获取上传后的文件 URL
             const fileUrl = `https://growth-public.oss-cn-shanghai.aliyuncs.com/books/it/${info.file.name}`;
             setFormData({
                 ...formData,
                 cover: fileUrl,
             });
+            setIsCoverUploaded(true); // 设置图片已上传
             message.success(`${info.file.name} file uploaded successfully`);
-        } else if (info.file.status === 'error') {
-            message.error(`${info.file.name} file upload failed.`);
+        } else if (info.file === 'error') {
+            message.error('file upload failed.');
         }
     };
 
@@ -141,22 +153,24 @@ const BookForm: React.FC<BookFormProps> = ({book, mode, onFinish, onCancel}) => 
     );
 
     // noinspection JSUnusedGlobalSymbols
-    const uploadImagePreviewContainer = <div className="mt-2">
-        {previewImage && (
-            <Image
-                wrapperStyle={{display: 'none'}}
-                preview={{
-                    visible: previewOpen,
-                    onVisibleChange: (visible) => {
-                        setPreviewOpen(visible);
-                    },
-                    afterOpenChange: (visible) => !visible && setPreviewImage(''),
-                }}
-                src={previewImage}
-                alt="Preview"
-            />
-        )}
-    </div>;
+    const uploadImagePreviewContainer = (
+        <div className="mt-2">
+            {previewImage && (
+                <Image
+                    wrapperStyle={{display: 'none'}}
+                    preview={{
+                        visible: previewOpen,
+                        onVisibleChange: (visible) => {
+                            setPreviewOpen(visible);
+                        },
+                        afterOpenChange: (visible) => !visible && setPreviewImage(''),
+                    }}
+                    src={previewImage}
+                    alt="Preview"
+                />
+            )}
+        </div>
+    );
 
     return (
         <Modal
@@ -232,29 +246,14 @@ const BookForm: React.FC<BookFormProps> = ({book, mode, onFinish, onCancel}) => 
                         className="ms-2"
                         listType="picture-card"
                         onPreview={handleCoverPreview}
-                        beforeUpload={async (file) => {
-                            if (!client) {
-                                message.error('OSS client not initialized.');
-                                return false;
-                            }
-                            try {
-                                await client.put('/books/it/' + `${file.name}`, file);
-                                return false; // 阻止默认上传行为
-                            } catch (error) {
-                                console.error('Error uploading file:', error);
-                                message.error('File upload failed.');
-                                return false;
-                            }
-                        }}
+                        beforeUpload={handleBeforeUpload}
                         onChange={handleCoverUpload}
                         maxCount={1} // 限制上传文件数量为1
                         accept="image/*" // 限制上传图片文件
                     >
                         {uploadButton}
                     </Upload>
-                    <div className="mt-2">
-                        {uploadImagePreviewContainer}
-                    </div>
+                    {uploadImagePreviewContainer}
                 </div>
                 <div className="mb-3">
                     <label htmlFor="description" className="form-label">Description:</label>
@@ -277,7 +276,9 @@ const BookForm: React.FC<BookFormProps> = ({book, mode, onFinish, onCancel}) => 
                 </div>
                 <div className="d-flex justify-content-between">
                     <Button type="default" onClick={onCancel}>Cancel</Button>
-                    <Button type="primary" htmlType="submit">{mode === 'edit' ? 'Save Book' : 'Add Book'}</Button>
+                    <Button type="primary" htmlType="submit" disabled={mode === 'add' && !isCoverUploaded}>
+                        {mode === 'edit' ? 'Save Book' : 'Add Book'}
+                    </Button>
                 </div>
             </form>
         </Modal>
