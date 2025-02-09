@@ -1,5 +1,6 @@
 ## 代办清单
 
+* 添加登录功能
 * 构建Dockerfile
 * 部署Docker镜像
 * 构建CI/CD流水线（Github Actions）
