@@ -1,15 +1,17 @@
 import React from 'react';
-import {Layout, Menu} from 'antd';
+import {Button, Layout, Menu} from 'antd';
 import {Link} from 'react-router-dom';
-import {BookOutlined, DashboardOutlined, HomeOutlined} from '@ant-design/icons';
+import {BookOutlined, DashboardOutlined, MoonOutlined, SunOutlined} from '@ant-design/icons';
 
 const {Sider} = Layout;
 
-const SideMenu: React.FC = () => {
+const SideMenu: React.FC<{ toggleTheme: () => void; themeMode: 'light' | 'dark' }> = ({toggleTheme, themeMode}) => {
     return (
         <Sider collapsible>
-            <div className="logo text-info text-center">
-                <HomeOutlined/>
+            <div className="logo" onClick={toggleTheme}>
+                <Button type="link" style={{color: '#fff', fontSize: '16px', padding: '16px'}}>
+                    {themeMode === 'light' ? <SunOutlined/> : <MoonOutlined/>} Toggle Theme
+                </Button>
             </div>
             <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline">
                 <Menu.Item key="1" icon={<DashboardOutlined/>}>
