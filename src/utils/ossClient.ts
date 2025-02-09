@@ -22,6 +22,7 @@ const ossClient = async () => {
         const now = new Date();
         const interval = expirationDate.getTime() - now.getTime() - 60 * 1000; // Refresh 1 minute before expiration
 
+        // noinspection JSUnusedGlobalSymbols
         return new OSS({
             region: 'oss-cn-shanghai',
             accessKeyId,

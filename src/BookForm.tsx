@@ -157,6 +157,7 @@ const BookForm: React.FC<BookFormProps> = ({book, mode, onFinish, onCancel}) => 
             />
         )}
     </div>;
+
     return (
         <Modal
             title={mode === 'edit' ? 'Edit Book' : 'Add a New Book'}
