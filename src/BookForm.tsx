@@ -140,6 +140,23 @@ const BookForm: React.FC<BookFormProps> = ({book, mode, onFinish, onCancel}) => 
         </button>
     );
 
+    // noinspection JSUnusedGlobalSymbols
+    const uploadImagePreviewContainer = <div className="mt-2">
+        {previewImage && (
+            <Image
+                wrapperStyle={{display: 'none'}}
+                preview={{
+                    visible: previewOpen,
+                    onVisibleChange: (visible) => {
+                        setPreviewOpen(visible);
+                    },
+                    afterOpenChange: (visible) => !visible && setPreviewImage(''),
+                }}
+                src={previewImage}
+                alt="Preview"
+            />
+        )}
+    </div>;
     return (
         <Modal
             title={mode === 'edit' ? 'Edit Book' : 'Add a New Book'}
@@ -235,20 +252,7 @@ const BookForm: React.FC<BookFormProps> = ({book, mode, onFinish, onCancel}) => 
                         {uploadButton}
                     </Upload>
                     <div className="mt-2">
-                        {previewImage && (
-                            <Image
-                                wrapperStyle={{display: 'none'}}
-                                preview={{
-                                    visible: previewOpen,
-                                    onVisibleChange: (visible) => {
-                                        setPreviewOpen(visible);
-                                    },
-                                    afterOpenChange: (visible) => !visible && setPreviewImage(''),
-                                }}
-                                src={previewImage}
-                                alt="Preview"
-                            />
-                        )}
+                        {uploadImagePreviewContainer}
                     </div>
                 </div>
                 <div className="mb-3">
