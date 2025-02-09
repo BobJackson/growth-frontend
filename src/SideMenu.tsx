@@ -7,13 +7,13 @@ const {Sider} = Layout;
 
 const SideMenu: React.FC<{ toggleTheme: () => void; themeMode: 'light' | 'dark' }> = ({toggleTheme, themeMode}) => {
     return (
-        <Sider collapsible>
+        <Sider collapsible theme={themeMode}>
             <div className="logo" onClick={toggleTheme}>
-                <Button type="link" style={{color: '#fff', fontSize: '16px', padding: '16px'}}>
+                <Button type="link">
                     {themeMode === 'light' ? <SunOutlined/> : <MoonOutlined/>} Toggle Theme
                 </Button>
             </div>
-            <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline">
+            <Menu defaultSelectedKeys={['1']} mode="inline">
                 <Menu.Item key="1" icon={<DashboardOutlined/>}>
                     <Link to="/">Dashboard</Link>
                 </Menu.Item>
