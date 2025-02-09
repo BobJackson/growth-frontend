@@ -48,7 +48,8 @@ const BookForm: React.FC<BookFormProps> = ({book, mode, onFinish, onCancel}) => 
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const [client, setClient] = useState<OSS | null>(null);
-    const [isCoverUploaded, setIsCoverUploaded] = useState(false); // 新增状态
+    const [isCoverUploaded, setIsCoverUploaded] = useState(mode === 'edit' && book.cover !== ''); // 新增状态
+    const [fileList, setFileList] = useState<UploadFile[]>([]); // 新增状态
 
     useEffect(() => {
         const initOSSClient = async () => {
@@ -63,6 +64,19 @@ const BookForm: React.FC<BookFormProps> = ({book, mode, onFinish, onCancel}) => 
 
         initOSSClient().then(() => console.log('OSS client initialized.'));
     }, []);
+
+    useEffect(() => {
+        if (mode === 'edit' && book.cover) {
+            setFileList([
+                {
+                    uid: '-1',
+                    name: book.cover.split('/').pop() || 'cover.jpg',
+                    status: 'done',
+                    url: book.cover,
+                },
+            ]);
+        }
+    }, [mode, book.cover]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const {name, value} = e.target;
@@ -105,7 +119,7 @@ const BookForm: React.FC<BookFormProps> = ({book, mode, onFinish, onCancel}) => 
             message.error('File upload failed.');
             return false;
         }
-    }
+    };
 
     const handleCoverUpload = async (info: UploadChangeParam) => {
         if (!client) {
@@ -121,6 +135,14 @@ const BookForm: React.FC<BookFormProps> = ({book, mode, onFinish, onCancel}) => 
             });
             setIsCoverUploaded(true); // 设置图片已上传
             message.success(`${info.file.name} file uploaded successfully`);
+            setFileList([
+                {
+                    uid: '-1',
+                    name: info.file.name,
+                    status: 'done',
+                    url: fileUrl,
+                },
+            ]);
         } else if (info.file === 'error') {
             message.error('file upload failed.');
         }
@@ -250,8 +272,9 @@ const BookForm: React.FC<BookFormProps> = ({book, mode, onFinish, onCancel}) => 
                         onChange={handleCoverUpload}
                         maxCount={1} // 限制上传文件数量为1
                         accept="image/*" // 限制上传图片文件
+                        fileList={fileList} // 设置文件列表
                     >
-                        {uploadButton}
+                        {fileList.length >= 1 ? null : uploadButton}
                     </Upload>
                     {uploadImagePreviewContainer}
                 </div>
