@@ -309,10 +309,10 @@ const BookForm: React.FC<BookFormProps> = ({book, mode, onFinish, onCancel}) => 
                            })}/>
                 </div>
                 <div className="mb-3 form-check">
+                    <label className="form-check-label" htmlFor="hidden">Hidden</label>
                     <input type="checkbox" className="form-check-input" id="hidden" name="hidden"
                            checked={formData.hidden}
                            onChange={(e) => setFormData({...formData, hidden: e.target.checked})}/>
-                    <label className="form-check-label" htmlFor="hidden">Hidden</label>
                 </div>
                 <div className="d-flex justify-content-between">
                     <Button type="default" onClick={onCancel}>Cancel</Button>
