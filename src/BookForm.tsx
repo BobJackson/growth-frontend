@@ -316,7 +316,7 @@ const BookForm: React.FC<BookFormProps> = ({book, mode, onFinish, onCancel}) => 
                 </div>
                 <div className="d-flex justify-content-between">
                     <Button type="default" onClick={onCancel}>Cancel</Button>
-                    <Button type="primary" htmlType="submit" disabled={mode === 'add' && !isCoverUploaded}>
+                    <Button type="primary" htmlType="submit" disabled={!isCoverUploaded}>
                         {mode === 'edit' ? 'Save Book' : 'Add Book'}
                     </Button>
                 </div>
