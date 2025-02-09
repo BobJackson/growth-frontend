@@ -1,8 +1,10 @@
 ## 代办清单
 
-## bug清单
+* 构建Dockerfile
+* 部署Docker镜像
+* 构建CI/CD流水线（Github Actions）
 
-* 修改时，cover没有显示出来；
+## bug清单
 
 ## 经验教训： 在尝试多次失败后，发现是前端的region设置错误导致网络连接不通，
 
