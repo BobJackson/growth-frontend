@@ -122,30 +122,47 @@ const BookForm: React.FC<BookFormProps> = ({book, mode, onFinish, onCancel}) => 
     };
 
     const handleCoverUpload = async (info: UploadChangeParam) => {
+        if (info.file.status === 'removed') {
+            setFileList([])
+            setIsCoverUploaded(false);
+            setFormData({
+                ...formData,
+                cover: '',
+            });
+            return;
+        }
+
+        if (info.file.status === 'uploading') {
+            message.loading(`${info.file.name} file is uploading...`);
+            return;
+        }
+
+        if (info.file.status === 'error') {
+            message.error('file upload failed.');
+            return
+        }
+
         if (!client) {
             message.error('OSS client not initialized.');
             return;
         }
-        if (info.file) {
-            // 获取上传后的文件 URL
-            const fileUrl = `https://growth-public.oss-cn-shanghai.aliyuncs.com/books/it/${info.file.name}`;
-            setFormData({
-                ...formData,
-                cover: fileUrl,
-            });
-            setIsCoverUploaded(true); // 设置图片已上传
-            message.success(`${info.file.name} file uploaded successfully`);
-            setFileList([
-                {
-                    uid: '-1',
-                    name: info.file.name,
-                    status: 'done',
-                    url: fileUrl,
-                },
-            ]);
-        } else if (info.file === 'error') {
-            message.error('file upload failed.');
-        }
+
+        // 获取上传后的文件 URL
+        const fileUrl = `https://growth-public.oss-cn-shanghai.aliyuncs.com/books/it/${info.file.name}`;
+        setFormData({
+            ...formData,
+            cover: fileUrl,
+        });
+        setIsCoverUploaded(true); // 设置图片已上传
+        message.success(`${info.file.name} file uploaded successfully`);
+        setFileList([
+            {
+                uid: '-1',
+                name: info.file.name,
+                status: 'done',
+                url: fileUrl,
+            },
+        ]);
     };
 
     type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
