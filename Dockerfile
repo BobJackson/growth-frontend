@@ -10,6 +10,9 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
+# It helps you serve a static site, single page application
+RUN npm i -g serve
+
 # Copy the rest of the application code
 COPY . .
 
@@ -20,4 +23,4 @@ RUN npm run build
 EXPOSE 3000
 
 # Run the application
-CMD ["npm", "run", "serve"]
+CMD [ "serve", "-s", "dist" ]
