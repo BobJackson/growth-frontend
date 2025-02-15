@@ -12,6 +12,5 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
-    allowedHosts: ['growth.wangyousong.com'],
   },
 })
