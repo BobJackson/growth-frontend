@@ -30,23 +30,28 @@ const BookList: React.FC = () => {
             if (response.ok) {
                 const data = await response.json().then(t => t.data);
                 setBooks(data.content);
+                setPagination({
+                    ...pagination,
+                    total: data.totalElements,
+                })
             } else {
                 console.error('Failed to fetch books');
             }
         } catch (error) {
             console.error('Error fetching books:', error);
         }
-    }, []);
+    }, [pagination.current, pagination.pageSize]);
 
     useEffect(() => {
         fetchBooks(pagination.current, pagination.pageSize).then();
-    }, [fetchBooks, pagination]);
+    }, [fetchBooks, pagination.current, pagination.pageSize]);
 
     const handleTableChange = (newPagination: TablePaginationConfig) => {
+        const {current, pageSize} = newPagination;
         setPagination({
             ...pagination,
-            current: newPagination.current ?? pagination.current,
-            pageSize: newPagination.pageSize ?? pagination.pageSize,
+            current: current ?? pagination.current,
+            pageSize: pageSize ?? pagination.pageSize,
         });
     };
 
