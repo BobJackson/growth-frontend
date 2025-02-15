@@ -18,9 +18,15 @@ interface Book {
     hidden: boolean;
 }
 
+interface Pagination {
+    current: number;
+    pageSize: number;
+    total: number;
+}
+
 const BookList: React.FC = () => {
     const [books, setBooks] = useState<Book[]>([]);
-    const [pagination, setPagination] = useState({current: 1, pageSize: 10, total: 0});
+    const [pagination, setPagination] = useState<Pagination>({current: 1, pageSize: 10, total: 0});
     const [editingBook, setEditingBook] = useState<Book | null>(null);
     const [isAddingBook, setIsAddingBook] = useState(false);
 
