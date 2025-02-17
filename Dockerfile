@@ -7,17 +7,20 @@ WORKDIR /app
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
+# Use cnpm
+RUN npm install -g cnpm --registry=https://registry.npmmirror.com
+
 # Install dependencies
-RUN npm install
+RUN cnpm install
 
 # It helps you serve a static site, single page application
-RUN npm i -g serve
+RUN cnpm i -g serve
 
 # Copy the rest of the application code
 COPY . .
 
 # Build the application
-RUN npm run build
+RUN cnpm run build
 
 # Expose the port the app runs on
 EXPOSE 3000
