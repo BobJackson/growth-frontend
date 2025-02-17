@@ -1,7 +1,6 @@
 ## 代办清单
 
 * 构建CI/CD流水线（Github Actions）
-* 支持按照Title筛选
 * 支持一键移除黑边
 
 ## bug清单
