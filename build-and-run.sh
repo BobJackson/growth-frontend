@@ -1,3 +1,4 @@
+cd /home/cloud/growth/code/growth-frontend || exit
 git pull
 docker stop growth-frontend-ui
 docker rm growth-frontend-ui

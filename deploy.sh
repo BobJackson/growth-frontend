@@ -1,0 +1,1 @@
+ssh root@wangyousong.com 'bash -s' < build-and-run.sh
