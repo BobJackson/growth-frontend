@@ -13,7 +13,7 @@ import {
     TableColumnType,
     TablePaginationConfig
 } from 'antd';
-import {DeleteOutlined, EditOutlined, SearchOutlined} from "@ant-design/icons";
+import {CrownOutlined, DeleteOutlined, EditOutlined, SearchOutlined} from "@ant-design/icons";
 import BookForm from './BookForm';
 import {format} from 'date-fns';
 import {FilterDropdownProps} from "antd/es/table/interface";
@@ -193,6 +193,24 @@ const BookList: React.FC = () => {
         }
     }, [fetchBooks, pagination]);
 
+    const handleBeautify = useCallback(async (id: string) => {
+        try {
+            const response = await fetch(`/api/books/${id}/actions/remove-black-border`, {
+                method: 'PATCH',
+            });
+            if (response.ok) {
+                message.success('Book beautify successfully');
+                fetchBooks(pagination.current, pagination.pageSize).then();
+            } else {
+                console.error('Failed to beautify book');
+                message.error('Failed to beautify book');
+            }
+        } catch (error) {
+            console.error('Error beautify book:', error);
+            message.error('An error occurred while beautify the book');
+        }
+    }, [fetchBooks, pagination]);
+
     const handleToggleHidden = useCallback(async (checked: boolean, id: string) => {
         try {
             const response = await fetch(`/api/books/${id}/hidden?hidden=${checked}`, {
@@ -316,6 +334,12 @@ const BookList: React.FC = () => {
                         onConfirm={() => handleDelete(record.id)}
                     >
                         <Button type="primary" danger icon={<DeleteOutlined/>}/>
+                    </Popconfirm>
+                    <Popconfirm
+                        title="Sure to beautify?"
+                        onConfirm={() => handleBeautify(record.id)}
+                    >
+                        <Button color="yellow" icon={<CrownOutlined/>}/>
                     </Popconfirm>
                 </Flex>
             ),
